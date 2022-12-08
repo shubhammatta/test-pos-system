@@ -6,9 +6,10 @@ import java.time.Instant
 data class PaymentDO(
     val uid: Long,
     val finalPrice: Int,
+    val customerId: String,
     val requestedPrice: Int,
     val priceModifier: Double,
     val createdAt: Instant,
-    val metadata: JsonNode,
+    val metadata: PaymentMethodMetadata,
 ) {
 }
