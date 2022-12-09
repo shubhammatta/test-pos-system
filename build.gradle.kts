@@ -1,8 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.ir.backend.js.compile
+import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
-	id("org.springframework.boot") version "3.0.0"
+	id("org.springframework.boot") version "2.7.5"
 	id("io.spring.dependency-management") version "1.1.0"
 	kotlin("jvm") version "1.7.21"
 	kotlin("plugin.spring") version "1.7.21"
@@ -35,12 +36,19 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-
+	implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.4")
+	implementation("org.mybatis.generator:mybatis-generator-core:1.4.0")
+	implementation("mysql:mysql-connector-java:8.0.28")
+//	implementation("tk.mybatis:mapper:3.3.9")
+	implementation(files("lib/uid-generator-1.0.1.jar"))
 	implementation("mysql:mysql-connector-java:8.0.25")
 	implementation("org.mybatis:mybatis:3.5.11")
 	implementation("org.apache.logging.log4j:log4j-api-kotlin:1.2.0")
 	implementation("org.apache.logging.log4j:log4j-api:2.17.0")
 	implementation("org.apache.logging.log4j:log4j-core:2.17.0")
+	implementation("org.apache.commons:commons-lang3:3.12.0")
+
+//Thanks for using https://jar-download.com
 
 
 	compileOnly("org.projectlombok:lombok")
@@ -67,13 +75,20 @@ tasks.withType<Test> {
 val TaskContainer.`composeUp`: TaskProvider<com.avast.gradle.dockercompose.tasks.ComposeUp>
 	get() = named<com.avast.gradle.dockercompose.tasks.ComposeUp>("composeUp")
 
-tasks {
-	create("flywayMigrateFund", org.flywaydb.gradle.task.FlywayMigrateTask::class.java) {
-		url = "jdbc:mysql://localhost/payments?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false"
-		user = "root"
-		password = "test"
-		locations = arrayOf("filesystem:src/main/resources/db/table")
-	}
+
+flyway {
+    url = "jdbc:mysql://localhost/payments?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false"
+    user = "root"
+    password = "test"
 }
 
+
+tasks {
+	named<BootRun>("bootRun") {
+		jvmArgs = ArrayList(jvmArgs).apply {
+			add("-Dspring.profiles.active=local")
+		}
+		dependsOn(flywayClean, flywayMigrate, composeUp)
+	}
+}
 

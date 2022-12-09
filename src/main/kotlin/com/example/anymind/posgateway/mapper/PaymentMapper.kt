@@ -49,9 +49,9 @@ interface PaymentMapper {
         values (
             #{uid, jdbcType=BIGINT},
             #{finalPrice, jdbcType=DOUBLE},
-            #{points, jdbcType=INT},
+            #{points, jdbcType=INTEGER},
             #{customerId, jdbcType=VARCHAR},
-            #{requestedPrice, jdbcType=INT},
+            #{requestedPrice, jdbcType=INTEGER},
             #{priceModifier, jdbcType=DOUBLE},
             #{createdAt, jdbcType=TIMESTAMP},
             #{metadata, jdbcType=CHAR},
