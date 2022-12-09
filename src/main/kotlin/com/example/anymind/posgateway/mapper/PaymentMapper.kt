@@ -13,9 +13,9 @@ interface PaymentMapper {
 
     @ConstructorArgs(
         Arg(column = "uid", jdbcType = JdbcType.BIGINT, javaType = Long::class, id = true),
-        Arg(column = "final_price", jdbcType = JdbcType.INTEGER, javaType = Int::class, id = true),
+        Arg(column = "final_price", jdbcType = JdbcType.VARCHAR, javaType = Int::class, id = true),
         Arg(column = "customer_id", jdbcType = JdbcType.VARCHAR, javaType = String::class, id = true),
-        Arg(column = "requested_price", jdbcType = JdbcType.INTEGER, javaType = Int::class, id = true),
+        Arg(column = "requested_price", jdbcType = JdbcType.VARCHAR, javaType = Int::class, id = true),
         Arg(column = "price_modifier", jdbcType = JdbcType.DOUBLE, javaType = Double::class, id = true),
         Arg(column = "created_at", jdbcType = JdbcType.TIMESTAMP, javaType = Instant::class, id = true),
         Arg(
@@ -39,6 +39,7 @@ interface PaymentMapper {
         insert into payments (
             uid,
             final_price,
+            points,
             customer_id,
             requested_price,
             price_modifier,
@@ -47,7 +48,8 @@ interface PaymentMapper {
         )
         values (
             #{uid, jdbcType=BIGINT},
-            #{finalPrice, jdbcType=INT},
+            #{finalPrice, jdbcType=DOUBLE},
+            #{points, jdbcType=INT},
             #{customerId, jdbcType=VARCHAR},
             #{requestedPrice, jdbcType=INT},
             #{priceModifier, jdbcType=DOUBLE},
@@ -58,7 +60,8 @@ interface PaymentMapper {
     )
     fun insert(
         uid: Long,
-        finalPrice: Int,
+        finalPrice: Double,
+        points: Int,
         customerId: String,
         requestedPrice: Int,
         priceModifier: Double,

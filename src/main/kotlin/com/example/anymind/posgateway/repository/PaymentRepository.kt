@@ -17,6 +17,7 @@ class PaymentRepository(
             paymentMapper.insert(
                 payment.uid,
                 payment.finalPrice,
+                payment.points,
                 payment.customerId,
                 payment.requestedPrice,
                 payment.priceModifier,
