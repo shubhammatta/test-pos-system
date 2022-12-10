@@ -1,17 +1,20 @@
 package com.example.anymind.posgateway.service
 
 import com.baidu.fsg.uid.UidGenerator
-import com.baidu.fsg.uid.impl.DefaultUidGenerator
-import com.example.anymind.posgateway.config.PaymentMethodConfig
+import com.example.anymind.posgateway.config.PaymentMethodsConfig
+import com.example.anymind.posgateway.enums.PaymentMethodsEnum
+import com.example.anymind.posgateway.factory.PaymentMethodInfoFactory
 import com.example.anymind.posgateway.model.PaymentDO
 import com.example.anymind.posgateway.model.PaymentMethodMetadata
 import com.example.anymind.posgateway.model.request.PayRequest
+import com.example.anymind.posgateway.model.request.PaymentHistoryRequest
 import com.example.anymind.posgateway.repository.PaymentRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import java.time.Clock
 import java.util.logging.Logger
 import javax.annotation.PostConstruct
+import kotlin.math.roundToInt
 
 @Service
 class PaymentService(
@@ -19,30 +22,43 @@ class PaymentService(
     val paymentRepository: PaymentRepository,
     val uidGenerator: UidGenerator,
     val objectMapper: ObjectMapper,
-    val paymentMethodConfig: PaymentMethodConfig
+    val paymentMethodInfoFactory: PaymentMethodInfoFactory
 ) {
 
     @PostConstruct
     fun postConstruct() {
-        log.info(paymentMethodConfig.methods.toString())
+        log.info(paymentMethodInfoFactory.paymentMethodsConfig.methods.toString())
     }
 
     fun pay(payRequest: PayRequest): PaymentDO {
         val uid = uidGenerator.uid
-        // TODO: Get final price
-        val metadata = objectMapper.convertValue(payRequest.additionalItem, PaymentMethodMetadata::class.java)
+        val paymentMethodInfo =
+            paymentMethodInfoFactory.getPaymentMethodInfo(PaymentMethodsEnum.from(payRequest.paymentMethod))
+        // 2 digit precision
+        val finalPrice = (payRequest.priceModifier * payRequest.requestedPrice * 100).roundToInt() / 100.00
+        val points = (paymentMethodInfo.pointsModifier * payRequest.requestedPrice).toInt()
+        val metadata = try {
+            objectMapper.convertValue(payRequest.additionalItem, PaymentMethodMetadata::class.java)
+        } catch (e: IllegalArgumentException) {
+            throw IllegalArgumentException("Additional items object is invalid ${payRequest.additionalItem}")
+        }
         val paymentDO = PaymentDO(
             uid,
-            payRequest.price.toDouble(),
-            0,
+            finalPrice,
+            points,
             payRequest.customerId,
-            payRequest.price.toInt(),
+            payRequest.requestedPrice,
             payRequest.priceModifier,
             payRequest.datetime,
             metadata
         )
         paymentRepository.insert(paymentDO)
         return paymentDO
+    }
+
+
+    fun getHistory(paymentHistoryRequest: PaymentHistoryRequest): List<PaymentDO> {
+
     }
 
     companion object {

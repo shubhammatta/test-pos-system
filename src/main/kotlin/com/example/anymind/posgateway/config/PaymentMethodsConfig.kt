@@ -1,11 +1,15 @@
 package com.example.anymind.posgateway.config
 
 import com.example.anymind.posgateway.enums.PaymentMethodsEnum
+import com.example.anymind.posgateway.mapper.PaymentMapper
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConstructorBinding
+
 
 @ConfigurationProperties(prefix ="payment")
-class PaymentMethodConfig(
-    val methods: Map<PaymentMethodsEnum, PaymentMethodInfo> = HashMap()
+@ConstructorBinding
+data class PaymentMethodsConfig(
+    val methods: Map<PaymentMethodsEnum, PaymentMethodInfo>
 )
 
 

@@ -7,6 +7,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Repository
+import java.time.Instant
 
 @Repository
 class PaymentRepository(
@@ -36,6 +37,10 @@ class PaymentRepository(
             log.error("Insertion failed for uid: ${payment.uid}")
             throw DatabaseException("Insertion failed for uid: ${payment.uid}")
         }
+    }
+
+    fun getHistoryInRange(start: Instant, end: Instant) {
+
     }
 
     companion object {

@@ -8,7 +8,7 @@ data class PaymentDO(
     val finalPrice: Double,
     val points: Int,
     val customerId: String,
-    val requestedPrice: Int,
+    val requestedPrice: Double,
     val priceModifier: Double,
     val createdAt: Instant,
     val metadata: PaymentMethodMetadata,
