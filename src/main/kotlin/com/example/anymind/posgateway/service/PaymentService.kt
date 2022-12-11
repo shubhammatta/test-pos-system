@@ -1,9 +1,9 @@
 package com.example.anymind.posgateway.service
 
 import com.baidu.fsg.uid.UidGenerator
-import com.example.anymind.posgateway.config.PaymentMethodsConfig
 import com.example.anymind.posgateway.enums.PaymentMethodsEnum
 import com.example.anymind.posgateway.exception.DatabaseException
+import com.example.anymind.posgateway.factory.PaymentMethodValidatorFactory
 import com.example.anymind.posgateway.factory.PaymentMethodInfoFactory
 import com.example.anymind.posgateway.model.PaymentDO
 import com.example.anymind.posgateway.model.PaymentMethodMetadata
@@ -23,7 +23,8 @@ class PaymentService(
     val paymentRepository: PaymentRepository,
     val uidGenerator: UidGenerator,
     val objectMapper: ObjectMapper,
-    val paymentMethodInfoFactory: PaymentMethodInfoFactory
+    val paymentMethodInfoFactory: PaymentMethodInfoFactory,
+    val paymentMethodValidatorFactory: PaymentMethodValidatorFactory
 ) {
 
     @PostConstruct
@@ -32,6 +33,7 @@ class PaymentService(
     }
 
     fun pay(payRequest: PayRequest): PaymentDO {
+        paymentMethodValidatorFactory.getValidator(payRequest.paymentMethod).validate(payRequest)
         val uid = uidGenerator.uid
         val paymentMethodInfo =
             paymentMethodInfoFactory.getPaymentMethodInfo(PaymentMethodsEnum.from(payRequest.paymentMethod))

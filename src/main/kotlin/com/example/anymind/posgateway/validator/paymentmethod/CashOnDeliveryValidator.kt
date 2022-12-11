@@ -1,14 +1,16 @@
 package com.example.anymind.posgateway.validator.paymentmethod
 
-import com.example.anymind.posgateway.config.PaymentMethodInfo
 import com.example.anymind.posgateway.config.PaymentMethodsConfig
+import com.example.anymind.posgateway.constants.Constants
+import com.example.anymind.posgateway.enums.CouriersEnum
 import com.example.anymind.posgateway.enums.PaymentMethodsEnum
+import javax.validation.ValidationException
 import com.example.anymind.posgateway.model.request.PayRequest
-import com.example.anymind.posgateway.validator.IPayRequestValidator
-import com.example.anymind.posgateway.validator.IValidator
+import com.example.anymind.posgateway.validator.PaymentMethodValidator
 import org.springframework.stereotype.Component
 
-class CashOnDeliveryValidator(paymentMethodsConfig: PaymentMethodsConfig) : IPayRequestValidator(paymentMethodsConfig) {
+@Component
+class CashOnDeliveryValidator(paymentMethodsConfig: PaymentMethodsConfig) : PaymentMethodValidator(paymentMethodsConfig) {
     override val paymentMethod = PaymentMethodsEnum.CASH_ON_DELIVERY
     override fun validate(payRequest: PayRequest) {
         limitCheck(payRequest, paymentMethodInfo)
@@ -16,10 +18,9 @@ class CashOnDeliveryValidator(paymentMethodsConfig: PaymentMethodsConfig) : IPay
     }
 
     override fun validateMetadata(payRequest: PayRequest) {
-        TODO("Not yet implemented")
-    }
-
-    companion object {
-        val paymentMethod = PaymentMethodsEnum.AMEX
+        val courier = payRequest.additionalItem?.get(Constants.COURIER_SERVICES)
+            ?: throw ValidationException("Courier service empty for Cash on delivery")
+        CouriersEnum.values().find { it.name == courier.toString() }
+            ?: throw ValidationException("Courier service not in YAMATO or SAGAWA")
     }
 }

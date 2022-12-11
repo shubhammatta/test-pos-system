@@ -1,16 +1,15 @@
 package com.example.anymind.posgateway.validator.paymentmethod
 
-import com.example.anymind.posgateway.config.PaymentMethodInfo
 import com.example.anymind.posgateway.config.PaymentMethodsConfig
+import com.example.anymind.posgateway.constants.Constants
 import com.example.anymind.posgateway.enums.PaymentMethodsEnum
-import com.example.anymind.posgateway.exception.PaymentMethodNotFoundException
+import javax.validation.ValidationException
 import com.example.anymind.posgateway.model.request.PayRequest
-import com.example.anymind.posgateway.validator.IPayRequestValidator
-import com.example.anymind.posgateway.validator.IValidator
+import com.example.anymind.posgateway.validator.PaymentMethodValidator
 import org.springframework.stereotype.Component
 
 @Component
-class AmexValidator(paymentMethodsConfig: PaymentMethodsConfig) : IPayRequestValidator(paymentMethodsConfig) {
+class AmexValidator(paymentMethodsConfig: PaymentMethodsConfig) : PaymentMethodValidator(paymentMethodsConfig) {
     override val paymentMethod = PaymentMethodsEnum.AMEX
 
     override fun validate(payRequest: PayRequest) {
@@ -19,7 +18,8 @@ class AmexValidator(paymentMethodsConfig: PaymentMethodsConfig) : IPayRequestVal
     }
 
     override fun validateMetadata(payRequest: PayRequest) {
-        limitCheck(payRequest, paymentMethodInfo)
-        validateMetadata(payRequest)
+        val value = payRequest.additionalItem?.get(Constants.LAST_4_DIGITS)
+            ?: throw ValidationException("Last 4 digits not found")
+        if (value.size() != 4 || !value.canConvertToExactIntegral() || value.intValue() < 0) throw ValidationException("Last 4 digits are not valid")
     }
 }
