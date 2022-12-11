@@ -91,6 +91,7 @@ interface PaymentMapper {
             select uid, final_price, points, customer_id, requested_price, price_modifier, created_at, metadata
             from payments
             where created_at >= #{start, jdbcType=TIMESTAMP} and created_at <= #{end, jdbcType=TIMESTAMP}
+            order by created_at
         """
     )
     fun selectInRange(start: Timestamp, end: Timestamp): List<PaymentDO>?
