@@ -1,6 +1,6 @@
 package com.example.anymind.posgateway.validator.paymentmethod
 
-import com.example.anymind.posgateway.config.PaymentMethodsConfig
+import com.example.anymind.posgateway.factory.PaymentMethodInfoFactory
 import com.example.anymind.posgateway.constants.Constants
 import com.example.anymind.posgateway.enums.CouriersEnum
 import com.example.anymind.posgateway.enums.PaymentMethodsEnum
@@ -10,8 +10,9 @@ import com.example.anymind.posgateway.validator.PaymentMethodValidator
 import org.springframework.stereotype.Component
 
 @Component
-class CashOnDeliveryValidator(paymentMethodsConfig: PaymentMethodsConfig) : PaymentMethodValidator(paymentMethodsConfig) {
-    override val paymentMethod = PaymentMethodsEnum.CASH_ON_DELIVERY
+class CashOnDeliveryValidator(paymentMethodInfoFactory: PaymentMethodInfoFactory) : PaymentMethodValidator(paymentMethodInfoFactory) {
+    override val paymentMethod
+        get() = PaymentMethodsEnum.CASH_ON_DELIVERY
     override fun validate(payRequest: PayRequest) {
         limitCheck(payRequest, paymentMethodInfo)
         validateMetadata(payRequest)
