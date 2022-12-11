@@ -3,6 +3,7 @@ package com.example.anymind.posgateway.service
 import com.baidu.fsg.uid.UidGenerator
 import com.example.anymind.posgateway.config.PaymentMethodsConfig
 import com.example.anymind.posgateway.enums.PaymentMethodsEnum
+import com.example.anymind.posgateway.exception.DatabaseException
 import com.example.anymind.posgateway.factory.PaymentMethodInfoFactory
 import com.example.anymind.posgateway.model.PaymentDO
 import com.example.anymind.posgateway.model.PaymentMethodMetadata
@@ -58,7 +59,10 @@ class PaymentService(
 
 
     fun getHistory(paymentHistoryRequest: PaymentHistoryRequest): List<PaymentDO> {
-
+        return paymentRepository.getHistoryInRange(
+            paymentHistoryRequest.startDateTime,
+            paymentHistoryRequest.endDateTime
+        ) ?: throw DatabaseException("Could not retrieve history for $paymentHistoryRequest")
     }
 
     companion object {

@@ -88,7 +88,7 @@ interface PaymentMapper {
         """
             select uid, final_price, customer_id, requested_price, price_modifier, created_at, metadata
             from payments
-            where uid = #{paymentId, jdbcType=BIGINT}
+            where created_at >= #{start, JDBCType=DATETIME} and created_at <= #{end, JDBCType=DATETIME}
         """
     )
     fun selectInRange(start: Instant, end: Instant): List<PaymentDO>?

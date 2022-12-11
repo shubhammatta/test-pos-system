@@ -39,8 +39,8 @@ class PaymentRepository(
         }
     }
 
-    fun getHistoryInRange(start: Instant, end: Instant) {
-
+    fun getHistoryInRange(start: Instant, end: Instant): List<PaymentDO>? {
+        return paymentMapper.selectInRange(start, end)
     }
 
     companion object {
