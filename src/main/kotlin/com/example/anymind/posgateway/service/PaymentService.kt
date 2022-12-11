@@ -38,11 +38,7 @@ class PaymentService(
         // 2 digit precision
         val finalPrice = (payRequest.priceModifier * payRequest.requestedPrice * 100).roundToInt() / 100.00
         val points = (paymentMethodInfo.pointsModifier * payRequest.requestedPrice).toInt()
-        val metadata = try {
-            objectMapper.convertValue(payRequest.additionalItem, PaymentMethodMetadata::class.java)
-        } catch (e: IllegalArgumentException) {
-            throw IllegalArgumentException("Additional items object is invalid ${payRequest.additionalItem}")
-        }
+        val metadata = PaymentMethodMetadata.from(payRequest.additionalItem)
         val paymentDO = PaymentDO(
             uid,
             finalPrice,

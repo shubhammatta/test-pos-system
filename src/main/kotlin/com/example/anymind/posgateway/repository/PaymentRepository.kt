@@ -7,6 +7,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Repository
+import java.sql.Timestamp
 import java.time.Instant
 
 @Repository
@@ -40,7 +41,9 @@ class PaymentRepository(
     }
 
     fun getHistoryInRange(start: Instant, end: Instant): List<PaymentDO>? {
-        return paymentMapper.selectInRange(start, end)
+        val startTimestamp = Timestamp.from(start)
+        val endTimestamp = Timestamp.from(end)
+        return paymentMapper.selectInRange(startTimestamp, endTimestamp)
     }
 
     companion object {

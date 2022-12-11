@@ -6,6 +6,7 @@ import com.example.anymind.posgateway.persistence.PaymentMethodMetadataTypeHandl
 import org.apache.ibatis.annotations.ConstructorArgs
 import org.apache.ibatis.annotations.*
 import org.apache.ibatis.type.JdbcType
+import java.sql.Timestamp
 import java.time.Instant
 
 @Mapper
@@ -54,7 +55,7 @@ interface PaymentMapper {
             #{requestedPrice, jdbcType=DOUBLE},
             #{priceModifier, jdbcType=DOUBLE},
             #{createdAt, jdbcType=TIMESTAMP},
-            #{metadata, jdbcType=CHAR},
+            #{metadata, jdbcType=CHAR, typeHandler=com.example.anymind.posgateway.persistence.PaymentMethodMetadataTypeHandler}
         )
         """
     )
@@ -72,9 +73,10 @@ interface PaymentMapper {
 
     @ConstructorArgs(
         Arg(column = "uid", jdbcType = JdbcType.BIGINT, javaType = Long::class, id = true),
-        Arg(column = "final_price", jdbcType = JdbcType.VARCHAR, javaType = Double::class, id = true),
+        Arg(column = "final_price", jdbcType = JdbcType.DOUBLE, javaType = Double::class, id = true),
+        Arg(column = "points", jdbcType = JdbcType.INTEGER, javaType = Int::class, id = true),
         Arg(column = "customer_id", jdbcType = JdbcType.VARCHAR, javaType = String::class, id = true),
-        Arg(column = "requested_price", jdbcType = JdbcType.VARCHAR, javaType = Double::class, id = true),
+        Arg(column = "requested_price", jdbcType = JdbcType.DOUBLE, javaType = Double::class, id = true),
         Arg(column = "price_modifier", jdbcType = JdbcType.DOUBLE, javaType = Double::class, id = true),
         Arg(column = "created_at", jdbcType = JdbcType.TIMESTAMP, javaType = Instant::class, id = true),
         Arg(
@@ -86,11 +88,11 @@ interface PaymentMapper {
     )
     @Select(
         """
-            select uid, final_price, customer_id, requested_price, price_modifier, created_at, metadata
+            select uid, final_price, points, customer_id, requested_price, price_modifier, created_at, metadata
             from payments
-            where created_at >= #{start, JDBCType=DATETIME} and created_at <= #{end, JDBCType=DATETIME}
+            where created_at >= #{start, jdbcType=TIMESTAMP} and created_at <= #{end, jdbcType=TIMESTAMP}
         """
     )
-    fun selectInRange(start: Instant, end: Instant): List<PaymentDO>?
+    fun selectInRange(start: Timestamp, end: Timestamp): List<PaymentDO>?
 
 }

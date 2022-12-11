@@ -1,19 +1,20 @@
 package com.example.anymind.posgateway.model.request
 
 import com.fasterxml.jackson.annotation.JsonAlias
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.annotation.JsonNaming
 import java.time.Instant
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class PayRequest(
-    @JsonAlias("customer_id")
     val customerId: String,
     val price: String,
-    @JsonAlias("payment_method")
+    var priceModifier: Double,
     val paymentMethod: String,
-    @JsonAlias("price_modifier")
-    val priceModifier: Double,
     val datetime: Instant,
-    @JsonAlias("addition_item")
     val additionalItem: JsonNode?
 ) {
     val requestedPrice: Double by lazy {

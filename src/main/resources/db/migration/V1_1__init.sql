@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS payments (
     uid BIGINT NOT NULL,
     final_price VARCHAR(10) NOT NULL,
+    points INT DEFAULT 0,
     customer_id VARCHAR(20) NOT NULL,
     requested_price INT NOT NULL,
     price_modifier DOUBLE DEFAULT 0,
