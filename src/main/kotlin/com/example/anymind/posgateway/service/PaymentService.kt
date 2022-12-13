@@ -11,6 +11,7 @@ import com.example.anymind.posgateway.model.request.PayRequest
 import com.example.anymind.posgateway.model.request.PaymentHistoryRequest
 import com.example.anymind.posgateway.repository.PaymentRepository
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.Clock
 import java.util.logging.Logger
@@ -33,22 +34,23 @@ class PaymentService(
     }
 
     fun pay(payRequest: PayRequest): PaymentDO {
-        paymentMethodValidatorFactory.getValidator(payRequest.paymentMethod).validate(payRequest)
+        paymentMethodValidatorFactory.getValidator(payRequest.paymentMethod!!).validate(payRequest)
         val uid = uidGenerator.uid
         val paymentMethodInfo =
             paymentMethodInfoFactory.getPaymentMethodInfo(PaymentMethodsEnum.from(payRequest.paymentMethod))
         // 2 digit precision
-        val finalPrice = (payRequest.priceModifier * payRequest.requestedPrice * 100).roundToInt() / 100.00
+        val finalPrice = (payRequest.priceModifier!! * payRequest.requestedPrice * 100).roundToInt() / 100.00
         val points = (paymentMethodInfo.pointsModifier * payRequest.requestedPrice).toInt()
+        log.info("PaymentId: $uid, finalPrice: $finalPrice, points: $points")
         val metadata = PaymentMethodMetadata.from(payRequest.additionalItem)
         val paymentDO = PaymentDO(
             uid,
             finalPrice,
             points,
-            payRequest.customerId,
+            payRequest.customerId!!,
             payRequest.requestedPrice,
-            payRequest.priceModifier,
-            payRequest.datetime,
+            payRequest.priceModifier!!,
+            payRequest.datetime!!,
             metadata
         )
         paymentRepository.insert(paymentDO)
@@ -58,12 +60,12 @@ class PaymentService(
 
     fun getHistory(paymentHistoryRequest: PaymentHistoryRequest): List<PaymentDO> {
         return paymentRepository.getHistoryInRange(
-            paymentHistoryRequest.startDateTime,
-            paymentHistoryRequest.endDateTime
+            paymentHistoryRequest.startDateTime!!,
+            paymentHistoryRequest.endDateTime!!
         ) ?: throw DatabaseException("Could not retrieve history for $paymentHistoryRequest")
     }
 
     companion object {
-        val log = Logger.getLogger(PaymentService::class.simpleName)
+        val log = LoggerFactory.getLogger(PaymentService::class.simpleName)
     }
 }

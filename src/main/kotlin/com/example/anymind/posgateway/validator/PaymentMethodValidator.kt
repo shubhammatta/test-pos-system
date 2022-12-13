@@ -17,7 +17,7 @@ abstract class PaymentMethodValidator(
     abstract fun validateMetadata(payRequest: PayRequest)
 
     fun limitCheck(payRequest: PayRequest, paymentMethodInfo: PaymentMethodInfo) {
-        if (payRequest.priceModifier !in paymentMethodInfo.lowerLimitModifier..paymentMethodInfo.upperLimitModifier) {
+        if (payRequest.priceModifier!! !in paymentMethodInfo.lowerLimitModifier..paymentMethodInfo.upperLimitModifier) {
             throw ValidationException("price modifier out of range ${paymentMethodInfo.lowerLimitModifier}..${paymentMethodInfo.upperLimitModifier}")
         }
     }

@@ -59,7 +59,11 @@ dependencies {
 
 
 	// testing
-	testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
+
+	implementation("javax.validation:validation-api:2.0.1.Final")
+	implementation("org.hibernate:hibernate-validator:8.0.0.Final")
+
 }
 
 tasks.withType<KotlinCompile> {

@@ -4,8 +4,8 @@ import java.time.Instant
 import javax.validation.constraints.NotNull
 
 data class PaymentHistoryRequest(
-    @NotNull
-    val startDateTime: Instant,
-    @NotNull
-    val endDateTime: Instant
+    @field:NotNull(message = "Start data must not be null")
+    val startDateTime: Instant?,
+    @field:NotNull(message = "End data must not be null")
+    val endDateTime: Instant?
 )

@@ -9,10 +9,11 @@ import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
 import java.time.Instant
+import javax.validation.Validator
 
 @Repository
 class PaymentRepository(
-    val paymentMapper: PaymentMapper
+    val paymentMapper: PaymentMapper,
 ) {
     fun insert(payment: PaymentDO) {
         val insertedCount = try {
@@ -43,6 +44,7 @@ class PaymentRepository(
     fun getHistoryInRange(start: Instant, end: Instant): List<PaymentDO>? {
         val startTimestamp = Timestamp.from(start)
         val endTimestamp = Timestamp.from(end)
+        log.info("Get History from: $startTimestamp to $endTimestamp")
         return paymentMapper.selectInRange(startTimestamp, endTimestamp)
     }
 

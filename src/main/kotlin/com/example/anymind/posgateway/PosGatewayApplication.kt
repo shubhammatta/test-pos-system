@@ -7,6 +7,8 @@ import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.web.filter.CommonsRequestLoggingFilter
 import java.time.Clock
+import javax.validation.Valid
+import javax.validation.Validator
 
 
 @SpringBootApplication
@@ -27,6 +29,7 @@ class PosGatewayApplication {
 		loggingFilter.setMaxPayloadLength(64000)
 		return loggingFilter
 	}
+
 }
 
 fun main(args: Array<String>) {
